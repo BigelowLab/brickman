@@ -19,8 +19,7 @@ read_layers <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
                        verbose = FALSE){
   
   filename <- switch(toupper(scenario[1]),
-      'PRESENT_CLIMATE' = file.path(path, "PRESENT_CLIMATE.nc"),
-      "PRESENT" = file.path(path, "PRESENT_CLIMATE.nc"),
+      "PRESENT" = file.path(path, "PRESENT.nc"),
       file.path(path, sprintf("%s_%s.nc", scenario[1], as.character(year[1]))))
   
   if (tolower(interval[1]) == 'ann'){
