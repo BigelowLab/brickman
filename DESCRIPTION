@@ -1,0 +1,17 @@
+Package: brickman
+Title: Tools for working with the Brickman GoM 2050 datasets
+Description: Tools for working with the Brickman GoM 2050 datasets.
+Version: 0.1
+Encoding: UTF-8
+Depends:
+    R (>= 4.1)
+Imports:
+    rlang,
+    dplyr,
+    ncdf4,
+    stars
+Maintainer: Ben Tupper <btupper@bigelow.org>
+Author: Ben Tupper <btupper@bigelow.org>
+URL: https://github.com/BigelowLab/brickman
+License: MIT + file LICENSE
+RoxygenNote: 7.1.2
