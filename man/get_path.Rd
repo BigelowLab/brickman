@@ -9,7 +9,7 @@ get_path(..., root = "/mnt/ecocast/coredata/brickman")
 \arguments{
 \item{...}{file path segements, see \code{\link[base]{file.path}}}
 
-\item{path}{character the root directory}
+\item{root}{character the root directory}
 }
 \value{
 path description for a directory or file
