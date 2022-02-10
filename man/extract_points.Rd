@@ -7,7 +7,9 @@
 extract_points(X, vars, pts)
 }
 \arguments{
-\item{X}{ncdf4 object}
+\item{X}{ncdf4 object or a filename to one.  if the latter, then the file will
+opened and closed automatically.  Otherwise, the file connectionis left open (so
+you have to close it yourself when done.)}
 
 \item{vars}{one or more variable names}
 

@@ -4,19 +4,33 @@
 #' only for curvilinear grids; for regular rectilinear grids use \code{\link[stars]{st_extract}}.
 
 #' @export
-#' @param X ncdf4 object
+#' @param X ncdf4 object or a filename to one.  if the latter, then the file will
+#'   opened and closed automatically.  Otherwise, the file connectionis left open (so
+#'   you have to close it yourself when done.)
 #' @param vars one or more variable names
 #' @param pts sf POINT object
 #' @return tibble with one row per point requested and column per var requested
 #'   Note that monthly vars will return a list column (12 elements for each point)
 extract_points <- function(X, vars, pts){
   
+  
+  on.exit({
+    if (please_close_me) ncdf4::nc_close(X)
+  })
+  
+  if (inherits(X, "character") && file.exists(X)){
+    X <- ncdf4::nc_open(X)
+    please_close_me <- TRUE
+  } else {
+    please_close_me <- FALSE
+  }
+  
   stopifnot(inherits(X, "ncdf4"))
   stopifnot(all(vars %in% names(X$var)))
   stopifnot(inherits(pts, "sf"))
   
   
-  xy <- sf::st_geometry(pts)
+  xy <- sf::st_coordinates(pts)
   nxy <- nrow(xy)
   
   
