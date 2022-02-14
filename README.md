@@ -4,6 +4,8 @@ Brickman
 Convenience tools for accessing Brickman Gulf of `Maine 2050` model
 outputs.
 
+Cf: Brickman D, Alexander MA, Pershing A, Scott JD, Wang Z. Projections of physical conditions in the Gulf of Maine in 2050. Elem Sci Anth. 2021 May 6;9(1):00055.
+
 Contents:
 
 -   PRESENT CLIMATE
