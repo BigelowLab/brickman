@@ -4,7 +4,7 @@
 \alias{extract_points}
 \title{Extract values from NCDF by point location}
 \usage{
-extract_points(X, vars, pts)
+extract_points(X, vars, pts, complete = FALSE)
 }
 \arguments{
 \item{X}{ncdf4 object or a filename to one.  if the latter, then the file will
@@ -14,10 +14,14 @@ you have to close it yourself when done.)}
 \item{vars}{one or more variable names}
 
 \item{pts}{sf POINT object}
+
+\item{complete}{logical, if TRUE include index, row, col, lon and lat in result}
 }
 \value{
 tibble with one row per point requested and column per var requested
   Note that monthly vars will return a list column (12 elements for each point)
+  If \code{complete} is \code{TRUE} then index, row, col, lon and lat are added
+  columns
 }
 \description{
 No check is performed to test if a point falls within the extent of the grid. Use this

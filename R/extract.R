@@ -9,9 +9,12 @@
 #'   you have to close it yourself when done.)
 #' @param vars one or more variable names
 #' @param pts sf POINT object
+#' @param complete logical, if TRUE include index, row, col, lon and lat in result
 #' @return tibble with one row per point requested and column per var requested
 #'   Note that monthly vars will return a list column (12 elements for each point)
-extract_points <- function(X, vars, pts){
+#'   If \code{complete} is \code{TRUE} then index, row, col, lon and lat are added
+#'   columns
+extract_points <- function(X, vars, pts, complete = FALSE){
   
   
   on.exit({
@@ -36,6 +39,11 @@ extract_points <- function(X, vars, pts){
   
   lon = ncdf4::ncvar_get(X, "nav_lon")
   lat = ncdf4::ncvar_get(X, "nav_lat")
+  mask <- ncdf4::ncvar_get(X, "land_mask")
+  ix <- which(mask < 1)
+  lon[ix] <- NA
+  lat[ix] <- NA
+
   d <- dim(lon)
   
   index <- sapply(seq_len(nxy),
@@ -44,24 +52,41 @@ extract_points <- function(X, vars, pts){
           which.min()
       }, xy, lon, lat)
   
-  col   <- ((index - 1) %% d[2])  + 1
-  row   <- floor((index - 1) / d[2]) + 1
+  row <- ((index - 1) %% d[1]) + 1  
+  col <- floor((index - 1) / d[1]) + 1
   
-  
-  sapply(vars,
+  v <- sapply(vars,
       function(vn){
         V <- ncdf4::ncvar_get(X, vn)
         if (X$var[[vn]][['ndims']] == 2){
-          v <- sapply(seq_len(nxy), 
-            function(i){
-              V[row[i], col[i]]
-            })   
+          #v <- sapply(seq_len(nxy), 
+          #  function(i){
+          #    V[row[i], col[i]]
+          #  })  
+          v <- V[index]
         } else {
           v <- lapply(seq_len(nxy),
+            #function(i){
+            # V[row[i], col[i],]
+            #})
             function(i){
-              V[row[i], col[i],]
+              V[index[i]]
             })
         }
       }, simplify = FALSE) |>
     dplyr::as_tibble()
+  
+  if (complete){
+    v <- dplyr::tibble(
+        olon = unname(xy[,1, drop = TRUE]),
+        olat = unname(xy[,2, drop = TRUE]),
+        lon = lon[index],
+        lat = lat[index],
+        index = index,
+        row = row,
+        col = col
+      ) |>
+      dplyr::bind_cols(v)
+  }
+  return(v)
 }
