@@ -29,7 +29,7 @@ Contents:
  + [dplyr](https://CRAN.R-project.org/package=dplyr)
  + [ncdf4](https://CRAN.R-project.org/package=ncdf4)
  + [stars](https://CRAN.R-project.org/package=stars)
- 
+ + [sf](https://CRAN.R-project.org/package=sf)
 
 ### Installation
 
@@ -45,6 +45,6 @@ suppressPackageStartupMessages({
     library(brickman)
   })
 
-x <- brickman::read_layers(scenario ='RCP85', year = 2055, vars = 'dSST', interval = "mon")
+x <- brickman::read_brickman(scenario ='RCP85', year = 2055, vars = 'SST', interval = "mon")
 plot(x)
 ```

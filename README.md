@@ -4,8 +4,6 @@ Brickman
 Convenience tools for accessing Brickman Gulf of `Maine 2050` model
 outputs.
 
-Cf: Brickman D, Alexander MA, Pershing A, Scott JD, Wang Z. Projections of physical conditions in the Gulf of Maine in 2050. Elem Sci Anth. 2021 May 6;9(1):00055.
-
 Contents:
 
 -   PRESENT CLIMATE
@@ -27,6 +25,7 @@ Contents:
 -   [dplyr](https://CRAN.R-project.org/package=dplyr)
 -   [ncdf4](https://CRAN.R-project.org/package=ncdf4)
 -   [stars](https://CRAN.R-project.org/package=stars)
+-   [sf](https://CRAN.R-project.org/package=sf)
 
 ### Installation
 
@@ -40,7 +39,7 @@ suppressPackageStartupMessages({
     library(brickman)
   })
 
-x <- brickman::read_layers(scenario ='RCP85', year = 2055, vars = 'dSST', interval = "mon")
+x <- brickman::read_brickman(scenario ='RCP85', year = 2055, vars = 'SST', interval = "mon")
 plot(x)
 ```
 
