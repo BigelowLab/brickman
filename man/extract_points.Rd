@@ -4,18 +4,20 @@
 \alias{extract_points}
 \title{Extract values from NCDF by point location}
 \usage{
-extract_points(X, vars, pts, complete = FALSE)
+extract_points(X, vars, pts, complete = FALSE, simplify_names = TRUE)
 }
 \arguments{
 \item{X}{ncdf4 object or a filename to one.  if the latter, then the file will
-opened and closed automatically.  Otherwise, the file connectionis left open (so
+opened and closed automatically.  Otherwise, the file connection is left open (so
 you have to close it yourself when done.)}
 
-\item{vars}{one or more variable names}
+\item{vars}{one or more variable names.  For future scenarios the prefix "d" and/or suffix "_ann"}
 
 \item{pts}{sf POINT object}
 
 \item{complete}{logical, if TRUE include index, row, col, lon and lat in result}
+
+\item{simplify_names}{logical, if TRUE drop "d" prefix and "_ann" suffix from variable names}
 }
 \value{
 tibble with one row per point requested and column per var requested

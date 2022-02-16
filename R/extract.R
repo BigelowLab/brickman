@@ -2,19 +2,20 @@
 #'
 #' No check is performed to test if a point falls within the extent of the grid. Use this
 #' only for curvilinear grids; for regular rectilinear grids use \code{\link[stars]{st_extract}}.
-
+#'
 #' @export
 #' @param X ncdf4 object or a filename to one.  if the latter, then the file will
-#'   opened and closed automatically.  Otherwise, the file connectionis left open (so
+#'   opened and closed automatically.  Otherwise, the file connection is left open (so
 #'   you have to close it yourself when done.)
-#' @param vars one or more variable names
+#' @param vars one or more variable names.  For future scenarios the prefix "d" and/or suffix "_ann"
 #' @param pts sf POINT object
 #' @param complete logical, if TRUE include index, row, col, lon and lat in result
+#' @param simplify_names logical, if TRUE drop "d" prefix and "_ann" suffix from variable names
 #' @return tibble with one row per point requested and column per var requested
 #'   Note that monthly vars will return a list column (12 elements for each point)
 #'   If \code{complete} is \code{TRUE} then index, row, col, lon and lat are added
 #'   columns
-extract_points <- function(X, vars, pts, complete = FALSE){
+extract_points <- function(X, vars, pts, complete = FALSE, simplify_names = TRUE){
   
   
   on.exit({
@@ -75,6 +76,11 @@ extract_points <- function(X, vars, pts, complete = FALSE){
         }
       }, simplify = FALSE) |>
     dplyr::as_tibble()
+  
+  if(simplify_names){
+    names(v) <- sub("d", "", names(v), fixed = TRUE)
+    names(v) <- sub("_ann", "", names(v), fixed = TRUE)
+  }
   
   if (complete){
     v <- dplyr::tibble(
