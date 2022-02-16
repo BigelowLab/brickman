@@ -4,6 +4,11 @@ Brickman
 Convenience tools for accessing Brickman Gulf of `Maine 2050` model
 outputs.
 
+> Cf: [Brickman D, Alexander MA, Pershing A, Scott JD, Wang Z.
+> Projections of physical conditions in the Gulf of Maine in 2050. Elem
+> Sci Anth. 2021 May
+> 6;9(1):00055.](https://online.ucpress.edu/elementa/article/9/1/00055/116900/Projections-of-physical-conditions-in-the-Gulf-of)
+
 Contents:
 
 -   PRESENT CLIMATE
@@ -17,6 +22,12 @@ Contents:
 
     -   year 2055
     -   year 2075
+
+Variables:
+
+-   Bathy_depth, land_mask
+-   Annual means: SST, MLD, SSS, Sbtm, Tbtm, U, V, Xbtm
+-   Monthly means: SST, MLD, SSS, Sbtm, Tbtm, U, V, Xbtm
 
 ### Requirements
 
