@@ -37,6 +37,11 @@ read_brickman <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
                    interval = interval, path = path, verbose = verbose)
   if (!is_present) names(x) <- gsub("d", "", names(x), fixed = TRUE)
   if (tolower(interval[1]) == "ann") names(x) <- gsub("_ann", "", names(x), fixed = TRUE)
+  
+  if (!is.null(add)){
+    x <- x + add
+  }
+  
   switch(tolower(form[1]),
          'tibble' = dplyr::as_tibble(x),
          'sf' = sf::st_as_sf(x, as_points = TRUE, na.rm = FALSE),
