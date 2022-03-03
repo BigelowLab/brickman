@@ -78,8 +78,8 @@ extract_points <- function(X, vars, pts, complete = FALSE, simplify_names = TRUE
     dplyr::as_tibble()
   
   if(simplify_names){
-    names(v) <- sub("d", "", names(v), fixed = TRUE)
-    names(v) <- sub("_ann", "", names(v), fixed = TRUE)
+    names(v) <- sub("^d", "", names(v), fixed = FALSE)
+    names(v) <- sub("^.*_ann$", "", names(v), fixed = FALSE)
   }
   
   if (complete){
