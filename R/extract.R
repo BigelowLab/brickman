@@ -79,7 +79,7 @@ extract_points <- function(X, vars, pts, complete = FALSE, simplify_names = TRUE
   
   if(simplify_names){
     names(v) <- sub("^d", "", names(v), fixed = FALSE)
-    names(v) <- sub("^.*_ann$", "", names(v), fixed = FALSE)
+    names(v) <- sub("_ann$", "", names(v), fixed = FALSE)
   }
   
   if (complete){
