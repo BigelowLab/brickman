@@ -28,15 +28,18 @@ read_brickman <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
   
   if (toupper(scenario[1]) != "PRESENT"){
     is_present <- FALSE
-    varnames <- paste0("d", vars)
+    #varnames <- paste0("d", vars)
+    varnames <- add_prefix(vars, prefix = "d")
   } else {
     is_present <- TRUE
     varnames <- vars
   }
   x <- read_layers(scenario = scenario, year = year, vars = varnames,
                    interval = interval, path = path, verbose = verbose)
-  if (!is_present) names(x) <- gsub("d", "", names(x), fixed = TRUE)
-  if (tolower(interval[1]) == "ann") names(x) <- gsub("_ann", "", names(x), fixed = TRUE)
+  if (!is_present) names(x) <- strip_prefix(names(x), "d") 
+                               # was gsub("d", "", names(x), fixed = TRUE)
+  if (tolower(interval[1]) == "ann") names(x) <- strip_suffix(names(x), "_ann") 
+                                                 # was gsub("_ann", "", names(x), fixed = TRUE)
   
   if (!is.null(add)){
     x <- x + add
@@ -72,17 +75,14 @@ read_layers <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
   filename <- compose_filename(scenario = scenario,
                                year = year,
                                path = path)
-  #filename <- switch(toupper(scenario[1]),
-  #    "PRESENT" = file.path(path, "PRESENT.nc"),
-  #    file.path(path, sprintf("%s_%s.nc", scenario[1], as.character(year[1]))))
   
   if (tolower(interval[1]) == 'ann'){
     # if all ann then read as attributes (one layer each)
     x <- suppressWarnings(stars::read_stars(filename,
-                           sub = paste0(vars, "_ann"),
+                           sub = add_suffix(vars, "_ann"), 
                            curvilinear = c("nav_lon", "nav_lat"),
                            quiet = !verbose)) |>
-      rlang::set_names(paste0(vars, "_ann"))
+      rlang::set_names(add_suffix(vars, "_ann"))  
   } else {
     # if all ann then read as attributes (one layer each)
     x <- suppressWarnings(stars::read_stars(filename,
