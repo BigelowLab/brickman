@@ -11,6 +11,8 @@
 #' @param path character, the root path to the data
 #' @param verbose logical, if TRUE output messages
 #' @param add stars object or NULL  If not NULL then add this to the result.
+#'   Note, Bathy_depth, land_mask, nav_lon and nav_lat variables are excluded, and
+#'   only variables common to both the add and the file read are added.
 #' @param form character, one of 'stars', 'tibble' or 'sf' to control output form
 #' @examples 
 #' \dontrun{
@@ -42,7 +44,12 @@ read_brickman <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
                                                  # was gsub("_ann", "", names(x), fixed = TRUE)
   
   if (!is.null(add)){
-    x <- x + add
+    exclude <- c("nav_lon", "nav_lat", "land_mask", "Bathy_depth")
+    nmx <- setdiff(names(x), exclude)
+    nma <- setdiff(names(add), exclude)
+    nms <- intersect(nmx, nma)
+    for (nm in nms) x[[nm]] <- x[[nm]] + add[[nm]]
+     #x <- x + add
   }
   
   switch(tolower(form[1]),
@@ -93,7 +100,7 @@ read_layers <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
       rlang::set_names(vars)
     
   }
- x
+  x
 }
 
 

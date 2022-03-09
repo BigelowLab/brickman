@@ -28,7 +28,9 @@ read_brickman(
 
 \item{verbose}{logical, if TRUE output messages}
 
-\item{add}{stars object or NULL  If not NULL then add this to the result.}
+\item{add}{stars object or NULL  If not NULL then add this to the result.
+Note, Bathy_depth, land_mask, nav_lon and nav_lat variables are excluded, and
+only variables common to both the add and the file read are added.}
 
 \item{form}{character, one of 'stars', 'tibble' or 'sf' to control output form}
 }
