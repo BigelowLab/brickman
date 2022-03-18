@@ -67,12 +67,12 @@ extract_points <- function(X, vars, pts, complete = FALSE, simplify_names = TRUE
           v <- V[index]
         } else {
           v <- lapply(seq_len(nxy),
-            #function(i){
-            # V[row[i], col[i],]
-            #})
             function(i){
-              V[index[i]]
+             V[row[i], col[i],]
             })
+            #function(i){
+            #  V[index[i]]
+            #})
         }
       }, simplify = FALSE) |>
     dplyr::as_tibble()
