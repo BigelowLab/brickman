@@ -1,3 +1,34 @@
+#' Retrieve convienent bounding boxes
+#' 
+#' @export
+#' @param name char the name of the bounding box, defaults to "native"
+#' @return \code{sf::st_sfc()} object
+get_bb = function(name = c("nwa", "native")[2]){
+  switch(name[1],
+    "nwa" = sf::st_bbox(c(xmin = -77, ymin = 36.5, xmax = -42.5, ymax = 56.7), 
+                  crs = "OGC:CRS84"),
+    sf::st_bbox(c(xmin = -101.504020690918, ymin = 15.9563217163086, 
+      xmax = 24.460205078125, ymax = 75.2476196289062),
+      crs = "OGC:CRS84")
+  ) |>
+  sf::st_as_sfc()
+}
+
+
+#' Warp a Brickman stars object
+#' 
+#' @export
+#' @param x stars object
+#' @param crs st_crs object
+#' @return warped stars object
+warp_brickman = function(x, crs = get_bb("nwa") ){
+  orig_s2 = sf::sf_use_s2()
+  sf::sf_use_s2(FALSE)
+  x = stars::st_warp(x, crs = crs)
+  sf::sf_use_s2(orig_s2)
+}
+
+
 #' Remove a prefix from a vector of variable names
 #' 
 #' @export

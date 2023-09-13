@@ -13,7 +13,10 @@
 #' @param add stars object or NULL  If not NULL then add this to the result.
 #'   Note, Bathy_depth, land_mask, nav_lon and nav_lat variables are excluded, and
 #'   only variables common to both the add and the file read are added.
-#' @param form character, one of 'stars', 'tibble' or 'sf' to control output form
+#' @param crs character or class \code{crs}.  If not "native"
+#' then the raster is transformed using \code{stars::st_warp()}.  Defaults to "native" which
+#' returns the native curvilinear grid.  Use \code{sf::st_crs(4326)} for longlat.
+#' @param form character, one of 'stars' (default), 'tibble' or 'sf' to control output form
 #' @examples 
 #' \dontrun{
 #' present <- read_brickman(scenario = "PRESENT")
@@ -26,6 +29,7 @@ read_brickman <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
                           path = get_path("nc"),
                           verbose = FALSE,
                           add = NULL,
+                          crs = list("native", sf::st_crs(4362))[[1]],
                           form = c("stars", "tibble", "sf")[1]){
   
   if (toupper(scenario[1]) != "PRESENT"){
@@ -50,6 +54,10 @@ read_brickman <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
     nms <- intersect(nmx, nma)
     for (nm in nms) x[[nm]] <- x[[nm]] + add[[nm]]
      #x <- x + add
+  }
+  
+  if (!(inherits(crs, "crs") && "native" %in% crs)){
+    x = warp_brickman()
   }
   
   switch(tolower(form[1]),
