@@ -1,4 +1,31 @@
-#' Retrieve convienent bounding boxes
+#' Warp a Brickman stars object
+#' 
+#' @export
+#' @param x stars object
+#' @param crs st_crs object
+#' @return warped stars object
+warp_brickman = function(x, crs = get_bb("nwa") ){
+  
+
+  d = dim(x)
+  if (length(d) > 2){
+    x = lapply(seq_len(d[3]),
+      function(i, rast = NULL, crs = NULL){
+        warp_brickman(dplyr::slice(rast, "month", i), crs = crs)
+        }, rast  = x, crs = crs) 
+    x = do.call(c, append(x, list(along = "month")))
+  } else {
+    orig_s2 = sf::sf_use_s2()
+    sf::sf_use_s2(FALSE)
+    x = suppressMessages(suppressWarnings(stars::st_warp(x, crs = crs)))
+    sf::sf_use_s2(orig_s2)
+  }
+  x
+}
+
+
+
+#' Retrieve convenient bounding boxes
 #' 
 #' @export
 #' @param name char the name of the bounding box, defaults to "native"
@@ -15,18 +42,6 @@ get_bb = function(name = c("nwa", "native")[2]){
 }
 
 
-#' Warp a Brickman stars object
-#' 
-#' @export
-#' @param x stars object
-#' @param crs st_crs object
-#' @return warped stars object
-warp_brickman = function(x, crs = get_bb("nwa") ){
-  orig_s2 = sf::sf_use_s2()
-  sf::sf_use_s2(FALSE)
-  x = stars::st_warp(x, crs = crs)
-  sf::sf_use_s2(orig_s2)
-}
 
 
 #' Remove a prefix from a vector of variable names

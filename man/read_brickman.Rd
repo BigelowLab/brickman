@@ -12,6 +12,7 @@ read_brickman(
   path = get_path("nc"),
   verbose = FALSE,
   add = NULL,
+  crs = list("native", sf::st_crs(4362))[[1]],
   form = c("stars", "tibble", "sf")[1]
 )
 }
@@ -32,7 +33,11 @@ read_brickman(
 Note, Bathy_depth, land_mask, nav_lon and nav_lat variables are excluded, and
 only variables common to both the add and the file read are added.}
 
-\item{form}{character, one of 'stars', 'tibble' or 'sf' to control output form}
+\item{crs}{character or class \code{crs}.  If not "native"
+then the raster is transformed using \code{stars::st_warp()}.  Defaults to "native" which
+returns the native curvilinear grid.  Use \code{sf::st_crs(4326)} for longlat.}
+
+\item{form}{character, one of 'stars' (default), 'tibble' or 'sf' to control output form}
 }
 \description{
 Lazily fixes variable names to drop "d" prefix and "_ann" suffix which permits

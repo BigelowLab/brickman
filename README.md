@@ -52,6 +52,8 @@ suppressPackageStartupMessages({
     library(brickman)
     library(sf)
     library(dplyr)
+    library(tidyr)
+    library(ggplot2)
   })
 
 x <- brickman::read_brickman(scenario ='RCP85', year = 2055, vars = 'SST', interval = "mon")
@@ -60,7 +62,7 @@ plot(x)
 
 ![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
-#### Plotting a portion
+#### Plotting a portion of curvilinear grid
 
 You can display a portion of a curvilinear grid by specifying the
 drawing extent. Note that by default R expands the plotting region. The
@@ -71,29 +73,75 @@ extent.
 bb = c(xmin = -77, ymin = 36.5, xmax = -42.5, ymax = 56.7) |>
   st_bbox(crs = st_crs(x)) 
 box = st_as_sfc(bb)  
-plot(dplyr::slice(x, "month", 1), 
-     main = "January SST anomaly", 
+plot(x, 
      extent = bb, 
      reset = FALSE,
-     axes = TRUE)
+     axes = FALSE)
+```
+
+    ## downsample set to 5
+
+``` r
 plot(box, color = NA, border = "orange", add = TRUE)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
-### Subsetting/Cropping
+### Subsetting/Cropping by transforming to regular grid
 
-Subsettng and cropping curvilinear grid is not supported by
-[stars](https://CRAN.R-project.org/package=stars). But it does mask
-regular grids, so transforming to a regular grid can help.
+Subsetting and cropping curvilinear grid is not supported by
+[stars](https://CRAN.R-project.org/package=stars) because (I think) gdal
+doesn’t support it. We can transform (warp) to a regular grid and then
+subset.
 
 ``` r
-sf::sf_use_s2(FALSE)
 box4326 = st_transform(box, 4326)
-warped = st_warp(dplyr::slice(x, "month", 1), crs = box4326)
+warped = warp_brickman(x, crs = sf::st_crs(box4326))
 sub = warped[bb]
-plot(sub, reset = FALSE, axes = TRUE)
-plot(box4326, add = TRUE, color = NA, border = "orange")
+plot(sub, reset = FALSE)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+### Extracting
+
+Points can be extracted easily from the regular grid.
+
+``` r
+points = sf::st_sample(sf::st_as_sfc(bb), 100)
+
+px = stars::st_extract(warped, points) |>
+  sf::st_as_sf() |>
+  rlang::set_names(c(month.abb, "geometry")) |>
+  tidyr::pivot_longer(where(is.numeric),
+                      names_to = "month",
+                      values_to = "SST") |>
+  dplyr::mutate(mon = match(month, month.abb)) |>
+  dplyr::filter(!is.na(SST))
+
+
+plot_hook = function(..., row = 0, col = 0, nr = 0, nrow = 0, ncol = 0, value = 0, bbox = NULL) {
+  #cat("nr = ", nr, class(nr), "\n")
+  z = dplyr::filter(px, mon == nr)
+  plot(z['SST'], col = "orange", add = TRUE)
+}
+
+plot(sub, hook = plot_hook)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+px = px |>
+  dplyr::mutate(month = factor(month, levels = month.abb)) 
+ggplot() +
+  geom_sf(data = px, aes(color = SST)) +
+  scale_color_gradient2(low = "blue", 
+                       high = "red", 
+                       na.value = "grey75", 
+                       name = "value",
+                       limits = c(2,-2)) + 
+  facet_wrap(~month)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->

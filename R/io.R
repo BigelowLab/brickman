@@ -56,8 +56,8 @@ read_brickman <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
      #x <- x + add
   }
   
-  if (!(inherits(crs, "crs") && "native" %in% crs)){
-    x = warp_brickman()
+  if (inherits(crs, "crs")){
+    x = warp_brickman(x, crs = crs)
   }
   
   switch(tolower(form[1]),
