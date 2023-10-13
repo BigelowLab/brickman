@@ -119,11 +119,6 @@ plot(sub, hook = plot_hook)
 px = px |>
   dplyr::mutate(month = factor(month, levels = month.abb)) 
 ggplot() +
-  geom_sf(data = px, aes(color = SST)) +
-  scale_color_gradient2(low = "blue", 
-                       high = "red", 
-                       na.value = "grey75", 
-                       name = "value",
-                       limits = c(2,-2)) + 
+  geom_sf(data = px, aes(colour = SST)) +
   facet_wrap(~month)
 ```
