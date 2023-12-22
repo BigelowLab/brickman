@@ -3,21 +3,22 @@
 #' @export
 #' @param x stars object
 #' @param crs st_crs object
+#' @param ... other arguments for \code{\link[stars]{st_warp}}
 #' @return warped stars object
-warp_brickman = function(x, crs = get_bb("nwa") ){
+warp_brickman = function(x, crs = get_bb("nwa"), ... ){
   
 
   d = dim(x)
   if (length(d) > 2){
     x = lapply(seq_len(d[3]),
       function(i, rast = NULL, crs = NULL){
-        warp_brickman(dplyr::slice(rast, "month", i), crs = crs)
+        warp_brickman(dplyr::slice(rast, "month", i), crs = crs, ...)
         }, rast  = x, crs = crs) 
     x = do.call(c, append(x, list(along = "month")))
   } else {
     orig_s2 = sf::sf_use_s2()
     sf::sf_use_s2(FALSE)
-    x = suppressMessages(suppressWarnings(stars::st_warp(x, crs = crs)))
+    x = suppressMessages(suppressWarnings(stars::st_warp(x, crs = crs, ...)))
     sf::sf_use_s2(orig_s2)
   }
   x

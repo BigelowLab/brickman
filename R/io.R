@@ -32,6 +32,18 @@ read_brickman <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
                           crs = list("native", sf::st_crs(4362))[[1]],
                           form = c("stars", "tibble", "sf")[1]){
   
+  if (FALSE){
+    scenario = c('RCP45', 'RCP85', 'PRESENT')[3]
+    year = c(2055, 2075, NA)[1]
+    vars = c('SST', 'SSS')
+    interval = c("ann", "mon")[2]
+    path = get_path("nc")
+    verbose = FALSE
+    add = NULL
+    crs = list("native", sf::st_crs(4362))[[1]]
+    form = c("stars", "tibble", "sf")[1]
+  }
+  
   if (toupper(scenario[1]) != "PRESENT"){
     is_present <- FALSE
     #varnames <- paste0("d", vars)
@@ -42,11 +54,12 @@ read_brickman <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
   }
   x <- read_layers(scenario = scenario, year = year, vars = varnames,
                    interval = interval, path = path, verbose = verbose)
-  if (!is_present) names(x) <- strip_prefix(names(x), "d") 
-                               # was gsub("d", "", names(x), fixed = TRUE)
+  if (!is_present) {
+    names(x) <- strip_prefix(names(x), "d")   # was gsub("d", "", names(x), fixed = TRUE)
+  }
+  
   if (tolower(interval[1]) == "ann") names(x) <- strip_suffix(names(x), "_ann") 
                                                  # was gsub("_ann", "", names(x), fixed = TRUE)
-  
   if (!is.null(add)){
     exclude <- c("nav_lon", "nav_lat", "land_mask", "Bathy_depth")
     nmx <- setdiff(names(x), exclude)
@@ -55,6 +68,8 @@ read_brickman <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
     for (nm in nms) x[[nm]] <- x[[nm]] + add[[nm]]
      #x <- x + add
   }
+  
+  if (is_present) x = mask_brickman(x)
   
   if (inherits(crs, "crs")){
     x = warp_brickman(x, crs = crs)
@@ -108,6 +123,7 @@ read_layers <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
       rlang::set_names(vars)
     
   }
+  
   x
 }
 
@@ -132,4 +148,37 @@ query_layers <- function(scenario = c('RCP45', 'RCP85', 'PRESENT')[1],
   ncdf4::nc_close(X)
   
   vars
+}
+
+#' Read just the land mask
+#' 
+#' @export
+#' @param land NA (default) or "native" if NA then convert land values to NA
+#' @param path character, the root path to the data
+#' @return stars object
+read_brickman_mask = function(land = NA, path = get_path("nc")){
+  filename <- compose_filename(scenario = "PRESENT", path = path)
+  
+  x = suppressWarnings(read_stars(filename,
+                 sub = "land_mask",
+                 curvilinear = c("nav_lon", "nav_lat"),
+                 quiet = TRUE)) 
+  
+  if (is.na(land)){
+    ix = x[[1]] <= 0
+    x[[1]][ix] <- NA_real_
+  }
+  x
+}
+
+
+#' Mask a brickman stars object
+#'
+#' @param x stars object
+#' @param mask stars object of mask
+#' @return the input but mask
+mask_brickman = function(x, mask = read_brickman_mask()){
+  ix = is.na(mask[[1]])
+  for (i in seq_along(x)) x[[i]][ix] = NA
+  x
 }

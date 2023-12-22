@@ -4,12 +4,14 @@
 \alias{warp_brickman}
 \title{Warp a Brickman stars object}
 \usage{
-warp_brickman(x, crs = get_bb("nwa"))
+warp_brickman(x, crs = get_bb("nwa"), ...)
 }
 \arguments{
 \item{x}{stars object}
 
 \item{crs}{st_crs object}
+
+\item{...}{other arguments for \code{\link[stars]{st_warp}}}
 }
 \value{
 warped stars object
