@@ -174,6 +174,7 @@ read_brickman_mask = function(land = NA, path = get_path("nc")){
 
 #' Mask a brickman stars object
 #'
+#' @export
 #' @param x stars object
 #' @param mask stars object of mask
 #' @return the input but mask
